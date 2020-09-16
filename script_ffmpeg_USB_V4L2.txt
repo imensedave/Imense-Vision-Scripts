@@ -1,0 +1,42 @@
+# scripts to use ffmpeg to listen to a USB cameras that are V4L2 compliant.
+# This script is released under the Apache 2.0  license (https://www.apache.org/licenses/LICENSE-2.0).
+
+# look at camera properties.
+v4l2-ctl -L -d /dev/video2
+v4l2-ctl --list-formats-ext -d /dev/video2
+
+
+ 
+# video preview
+mplayer tv:// -tv driver=v4l2:width=1920:height=1080:device=/dev/video0:fps=30:outfmt=mjpeg
+
+
+
+
+#dump images from USB camera to tmp_dir
+ffmpeg -f video4linux2 -input_format mjpeg -video_size 1280x720 -i /dev/video0 -t 00:30:10 -qscale:v 2  tmp_dir/img%5d.jpeg
+
+
+
+#record  video from USB camera directory tmp_dir
+ffmpeg -f v4l2 -framerate 30 -video_size 1920x1080 -input_format mjpeg -i /dev/video0 -t 00:03:10 tmp_dir/out.mkv
+
+#record video clips from USB camera directory tmp_dir
+
+ffmpeg -f v4l2 -framerate 30 -video_size 1920x1080 -input_format mjpeg -i /dev/video0 -t 00:10:00 -map 0  -f segment -segment_time 30 tmp_dir/seg%03d.mkv
+
+
+# convert .mkv to .mp4
+
+ffmpeg -i seg000.mkv -codec copy seg000.mp4
+
+
+
+
+
+
+
+# dump images from rtsp stream to tmp_dir
+
+ffmpeg -rtsp_transport tcp -i rtsp://admin:passwd@10.42.0.99/Streaming/Channels/101/ -t 00:10:00 -qscale:v 2 tmp_dir/img%4d.jpeg
+

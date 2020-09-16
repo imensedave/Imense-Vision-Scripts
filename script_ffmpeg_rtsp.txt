@@ -1,0 +1,36 @@
+# scripts to use ffmpeg to listen to a rtsp stream.
+# tested with HIKvision ONVIF compliant camera.
+# This script is released under the Apache 2.0  license (https://www.apache.org/licenses/LICENSE-2.0).
+
+
+
+# find machine local IP address (linux)
+ip addr
+
+# use nmap to find all devices on local subnet.
+nmap
+nmap -sn 192.168.1.0/24
+nmap -sn 10.42.0.1/24
+
+
+
+
+#record h264 video clips from HIKvision camera rtsp stream to directory tmp_dir
+
+ffmpeg -rtsp_transport tcp -i rtsp://admin:passwd@10.42.0.99/Streaming/Channels/101/ -t 00:10:00 -map 0  -f segment -segment_time 30 tmp_dir/seg%03d.mkv
+
+
+
+
+# convert .mkv to .mp4
+
+ffmpeg -i seg000.mkv -codec copy seg000.mp4
+
+
+
+
+
+# dump images from rtsp stream to tmp_dir
+
+ffmpeg -rtsp_transport tcp -i rtsp://admin:passwd@10.42.0.99/Streaming/Channels/101/ -t 00:10:00 -qscale:v 2 tmp_dir/img%4d.jpeg
+
