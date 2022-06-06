@@ -34,3 +34,4 @@ ffmpeg -i seg000.mkv -codec copy seg000.mp4
 
 ffmpeg -rtsp_transport tcp -i rtsp://admin:passwd@10.42.0.99/Streaming/Channels/101/ -t 00:10:00 -qscale:v 2 tmp_dir/img%4d.jpeg
 
+ffmpeg -f v4l2 -framerate 25 -video_size 1280x720 -input_format mjpeg -i /dev/video0 -t 00:04:00 -map 0  -f segment -segment_time 10  -preset fast tmp_dir/slam%02d.mkv
